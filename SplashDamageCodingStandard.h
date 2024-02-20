@@ -75,7 +75,7 @@ class USkeletalMeshComponent;
 UCLASS()
 // [class.name] embed the agreed project codename while following UE4 naming rules. 
 //  - See [module.naming.class]
-class ASDCodingStandardExampleActor : public ACharacter
+class AVallhundCodingStandardExampleActor : public ACharacter
 {
 	GENERATED_BODY() // GENERATED_UCLASS_BODY is deprecated
 
@@ -89,7 +89,7 @@ public:
 
 	// [class.dtor] don't write empty one, default or remove it
 	//  respect the rule of 3/5/0 http://en.cppreference.com/w/cpp/language/rule_of_three
-	~ASDCodingStandardExampleActor() = default; // or just remove
+	~AVallhundCodingStandardExampleActor() = default; // or just remove
 
 	// [class.virtual] explicitly mark up virtual methods
 	//  - always use the `override` specifier
@@ -143,14 +143,10 @@ protected:
 //  for ex implementation-only functions can just take the group as an argument
 //  NOTE: this is not always possible, but highly desirable for "config" like variables
 USTRUCT(BlueprintType)
-struct FSDCodingStandardBlueprintVarGroup
+struct FVallhundCodingStandardBlueprintVarGroup
 {
 	GENERATED_BODY()
 
-	// [vs.plugin] some good tools to help manage these special meta attributes
-	//  it's a pain to write them by hand
-	//  - UE4 Intellisense https://marketplace.visualstudio.com/items?itemName=RxCompiLe.UE4Intellisense
-	//  - SpecifierTool https://marketplace.visualstudio.com/items?itemName=patience2012.SpecifierTool
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera)
 	TArray<int> WidgetCameraLevels; // [class.member.def] Unreal arrays start initialized and empty
 
@@ -183,52 +179,28 @@ struct FSDCodingStandardBlueprintVarGroup
 // [cpp.enum.generated] Use the GenerateStringFuncs parameter if you need string conversion or
 //  query the number of values. NOTE: only available on certain projects 
 //UENUM(GenerateStringFuncs)
-enum class ESDCodingStandardEnum // `: uint8` optional underlying type 
+enum class EVallhundCodingStandardEnum // `: uint8` optional underlying type 
 {
 	ValueA,
 	ValueB,
 	ValueC,
 
 	// [cpp.enum.generated.count] Don't put a label to represent the number of values in the enum
-	//  use EnumAutoGen::GetNumValues<ESDCodingStandardEnum>() instead.
+	//  use EnumAutoGen::GetNumValues<EVallhundCodingStandardEnum>() instead.
 	Max // <- BAD
 };
 
 UCLASS()
-class USDCodingStandardExampleComponent : public USceneComponent
+class UVallhundCodingStandardExampleComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:
-	// [func.arg.readability] avoid `bool` function arguments, especially successions of them	
-	/* BAD -> */ void FuncHardToReadOnCall(int Order, bool bSetCache, bool bUseLog) const; /* <- BAD */
-	using TOrder = int;
-	enum class ECacheFlags { Use, Disabled, Unspecified };
-	enum class ELogging { Yes, No };
-	/* GOOD -> */ void FuncNiceToReadOnCall(TOrder, ECacheFlags, ELogging) const;
-	//  argument names in declarations are ignored, try to encode as much meaning as possible in the
-	//  type also even this simple typedef/using goes a long way readability wise at the call site:
-	//  ex: FuncNiceToReadOnCall(FOrder(42), FCacheFlags::Use, FLogFlags::Custom, FLoadOnPlay(false));
-
 	// [func.arg.readability] avoid consecutive chains of same type, avoid too many arguments
 	/* BAD -> */ void FuncWithTooManyArgs(const FVector& Location, const FVector& Origin,
 	const FVector& EndPoint, const FRotator& Rotation, const UPrimitiveComponent& Parent,
 	const AActor& Owner) const; /* <- BAD */
 	//  try to add a helper structure, or possibly split into more functions that are less complex
-
-	// [singleton.no] NEVER USE SINGLETONS!!!
-	//  - they are very problematic in multi-threaded scenarios
-	//  - they interfere/break with Hot Reload and plugins
-	//  - discuss alternatives with your lead
-	//  - if you somehow have to add one, first reconsider
-	//    - then use the Meyers pattern: https://stackoverflow.com/a/1661564
-	/* BAD -> */ static USDCodingStandardExampleComponent* Instance; // defined in .cpp
-	/* VERY BAD -> */ const USDCodingStandardExampleComponent* GetInstance() const { return Instance; }
-
-	// [ue.alloc] expose the allocation as a policy for new utility methods you write
-	//  this way the caller has a chance to decide how memory is utilized
-	template<class AllocatorType>
-	void GetComponents(TArray<const UActorComponent*, AllocatorType>& OutComponents) const;
 
 	// [cpp.lambda] used later for guidelines
 	void LambdaStyle(const AActor* ExternalEntity) const;
@@ -246,13 +218,6 @@ protected:
 	FSDCodingStandardBlueprintVarGroup BlueprintGroup;
 
 private:
-	// [class.constant] best way to define constants
-	constexpr static int SomeDefaultMagicValue = 0xFF00;
-	//  BAD alternatives:
-	//      #define OtherDefaultMagicValue (5)
-	//      enum { RandomSeemValue = 434334 };
-	//      static int AnotherMagicNumber; // actual value buried in .cpp
-
 	// [naming.bool] Exception from UE4 coding standard:
 	//  DON'T add `b` prefix to bool declaration names!
 	//  instead use English Modal Verbs and variations like: Can, Does, Will, Is, Has, Use, etc
@@ -269,7 +234,7 @@ private:
 //      this simple function would have been inlined anyway
 //  - having it like this also helps refactoring
 //      you can easily move this to the .cpp without messing up the class definition
-inline const USkeletalMeshComponent* ASDCodingStandardExampleActor::GoodExampleOfInline() const
+inline const USkeletalMeshComponent* AVallhundCodingStandardExampleActor::GoodExampleOfInline() const
 {
 	return OtherMesh.Get();
 }
@@ -287,7 +252,7 @@ inline bool operator == (
 
 // [cpp.namepace.public] Use a namespace to contain free functions.
 //  This helps manage potential name clashes and unity build issues.
-namespace SDCodingStandardHelpers
+namespace VallhundCodingStandardHelpers
 {
 	void PublicHelper(const USDCodingStandardExampleComponent& Object);
 }
@@ -296,28 +261,12 @@ namespace SDCodingStandardHelpers
 //  - Interface modules should be prefixed with Interface.
 //  - Game independent modules should be prefixed with Core.
 //  - Game specific modules do not have any prefix.
-//  - Prototype only modules should be prefixed with Prototype.
-//      - Prototype modules are only temporary modules.
-//      - Prototype modules will never be included in "live" builds.
-//      - Prototype code should be avoided in non-prototype modules.
 
 // [module.naming.class] code in modules should also follow our naming convention
-//  - Interfaces in Interface modules should be prefixed with SDI
-//  - Classes, Struct & Enums in Interface modules should be prefixed with SDC
-//  - Interfaces in Core modules should be prefixed with SDC
-//  - Classes, Struct & Enums in Core modules should be prefixed with SDC
-//  - Interfaces in Game modules should be prefixed with SD
-//  - Classes, Struct & Enums in Game modules should be prefixed with SD
+//  - Interfaces in Interface modules should be prefixed with IVallhund
+//  - Classes, Struct & Enums should be prefixed with Vallhund
 
 // [module.naming.namespace]
-//  - Namespaces in Core modules should be prefixed with SDC
-//  - Namespaces in Game modules should be prefixed with SD
+//  - Namespaces in Game modules should be prefixed with Vallhund
 //  - Namespaces should be named the same as the file they live in
 //  - Namespaces may be postfixed with "Helpers" where it prevents ambiguity
-
-// [module.dependency] modules should follow strict dependency rules
-//  - Interface modules should only include engine modules.
-//  - Core modules should only include engine and interface modules.
-//      - some Core modules such as CoreUtility and CoreTypes are allowed to be included.
-//  - Game modules can include any other non-prototype module.
-//  - Prototype modules can include any other module.
