@@ -78,7 +78,6 @@ namespace SDCodingStandardHelpers
 // [basic.rule.brace] FOLLOW UE4 coding style i.e. Allman style aka one every line
 void BraceStyle()
 {
-	// illustration purpose only - don't do this in live code (use bit sets instead of many bool's)
 	const bool FailCondition = false, TrueCondition = true,
 		SomethingElse = true, Contract = true, Binding = true;
 
@@ -95,7 +94,7 @@ void BraceStyle()
 	{
 		// ...
 	}
-	else // !SomethingElse and !TrueCondition
+	else
 	{
 		// ...
 	}
@@ -209,22 +208,6 @@ void DontWasteMemory(const AActor& Actor)
 	//      don't intermingle bool's or small types willy nilly with bigger ones etc
 }
 
-// [markup.engine] Use special markers for engine changes
-void EngineChanges()
-{
-	if (true)
-	{
-// @SPLASH_DAMAGE_CHANGE: <author email> - BEGIN: <description>
-		// ...
-// @SPLASH_DAMAGE_CHANGE: <author email> - END
-	}
-
-	// - always place the markers at column 1, no matter how indented the modified code is
-	// - if the END tag is too far from the BEGIN, repeat the description
-	// - if code is deleted rather than modified, discuss with lead the right approach
-	//	 i.e. commenting out the section vs actually removing it
-}
-
 bool GameWithEditorChanges(const TArray<int>& Widgets)
 {
 	// [markup.editor] isolate Editor specific changes in game code
@@ -244,59 +227,7 @@ bool GameWithEditorChanges(const TArray<int>& Widgets)
 	return true;
 }
 
-// [cpp.auto] use `auto` or not at your discretion but BE CONSISTENT
-//  - if a part of code already has an auto style, follow it, don't mix
-//  - don't bikeshed over the merits of each style, pick one and stick with it
-void AutoStyle()
-{
-	// [cpp.auto.init] auto forces to have initialization - this is always good
-	auto Int = 42; // an int, if explicitly declared it would have garbage default value
-	auto MoreStuff = 42u; // this is unsigned int;
-	auto EvenMore = 42.f; // float
-	auto Precision = 42.0; // double
-	auto Condition = false; // boolean
-	auto Big = 42ll; // long long
-
-	int *PtrInt = &Int;
-	int &RefInt = Int;
-
-	// auto on its own NEVER DEDUCES references or const'ness
-	auto not_what_you_think = static_cast<int &>(Int); // <- BAD: type is `int`
-	auto still_bad = static_cast<const int>(Int); // <- BAD: type is still `int`
-
-	// [cpp.auto.golden-rule] ALWAYS mark auto with the appropriate qualifiers:
-	//  const, &, * - even if it's superfluous
-	auto &proper_ref = Int;
-	auto &enforce_ref = RefInt;
-	auto hidden_ptr = &Int; // <- BAD even if it still works
-	auto *explicit_ptr = PtrInt;
-	const auto &explicit_ref = RefInt;
-
-	// [cpp.auto.init.lbmd] a generalization of the always-initialized is the
-	//  self calling lambda technique (bonus: very useful for `const`)
-	const auto InitLevel = []()
-	{
-		//  possible example of complicated logic
-		// 	that cannot be easily implemented with the ?: operator
-		//
-		//  if (auto CamMgr = (static_cast<ACameraManager *>(PC))->GetCameraManager())
-		//      return CamMgr->GetCurrentHeightLevel();
-		//  else
-		return 0;
-	}(); // <- called here immediately, so guaranteed to get a default value
-
-	// [cpp.auto.fwd] Don't use `auto &&` unless you know what you are doing
-	//  i.e perfect forwarding inside a lambda
-}
-
-void NoAutoStyle()
-{
-	// just don't use it and move on
-	//
-	// if you work in an area where it started with AutoStyle,
-	// continue it or refactor it all without auto
-	// mix of the 2 styles leads to poor readability and maintainability
-}
+// [cpp.auto] avoid auto as often as possible
 
 void NumericLimits()
 {
@@ -376,34 +307,16 @@ void USDCodingStandardExampleComponent::LambdaStyle(const AActor* ExternalEntity
 		// RefDuplicate => `const int &`
 		// NotReference => `int`
 	};
-}
 
-#ifdef PROJECT_HAS_ENUMAUTOGEN
-static void EnumString()
-{
-	// [cpp.enum.generated.count] Don't put a label to represent the number of values in the enum
-	//  use EnumAutoGen::GetNumValues<ESDCodingStandardEnum>() instead.
-	constexpr auto NumValues = EnumAutoGen::GetNumValues<ESDCodingStandardEnum>();
-
-	// [cpp.enum.generated] Use the GenerateStringFuncs parameter if you need string conversion or
-	// 	query the number of values. Don't write boilerplate code for this yourself
-	constexpr auto * ValueAString = EnumAutoGen::GetEnumString(ESDCodingStandardEnum::ValueA);
-
-	// [cpp.enum.generated.foreach] Use ForEachPair, ForEachString, ForEachVal functions 
-	// 	if you need to do something for each enum value or string
-	EnumAutoGen::ForEachPair<ESDCodingStandardEnum>(
-		[](ESDCodingStandardEnum Value, const TCHAR * String)
+	// [cpp.lambda.shared]
+	// Consider using the new shared pointer delegate:
+	if (AssetRegistryModule.Get().IsLoadingAssets())
 	{
-		// Do something
-	});
+		AssetRegistryModule.Get().OnFilesLoaded().AddSP(this,
+			&SDiscoveringAssetsDialog::AssetRegistryLoadComplete);
+	}
 }
-#endif
 
 void SDCodingStandardHelpers::PublicHelper(const USDCodingStandardExampleComponent& Object)
-{
-}
-
-// [func.default.args] put in a C-style comment any default argument
-void CreateSequence(int32 Start, int32 End, int32 Increment /* = 1 */)
 {
 }
