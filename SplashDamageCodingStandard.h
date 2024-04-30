@@ -64,7 +64,7 @@
 //  declare or, if necessary, make the file you are trying to include public.
 
 // [header.incl.gen] always have the .generated files last
-#include "SplashDamageCodingStandard.generated.h"
+#include "VallhundCodingStandard.generated.h"
 
 // [header.rule.fwd] list as many forward declaration as you can
 //  it's also acceptable to declare them at the usage site, but if they recur, bring them up here
